@@ -1,0 +1,10 @@
+(defun add-break-point ()
+  (interactive)
+(let (
+      (filename (buffer-file-name))
+      (linenum (line-number-at-pos))
+      )
+  (gdb-display-gdb-buffer)
+  (insert (format "b %s:%d" (file-name-nondirectory filename) linenum))
+  (comint-send-input)
+  ))
