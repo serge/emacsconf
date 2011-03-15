@@ -1,3 +1,6 @@
+(defun current-buffer-other-window ()
+  (interactive)
+  (switch-to-buffer-other-window (buffer-name)))
 
 (defun copy-current-word ()
   "Copy current word into kill ring"
