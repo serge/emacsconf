@@ -4,19 +4,30 @@
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (setq inhibit-startup-echo-area-message t)
 (setq inhibit-startup-message t)
+(if (functionp 'set-message-beep) (set-message-beep 'silent))
 (fset 'yes-or-no-p 'y-or-n-p)
 (column-number-mode 1)
 (line-number-mode 1)
 (which-func-mode 1)
 (ido-mode 1)
 
-(add-to-list 'load-path "~/emacs")
-(load "codepad")
-(load "c++-settings")
-(load "misc")
-
-;; make c++-mode the default mode for h files
-(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+(let (
+      (conf-path (file-name-directory
+			(if load-file-name
+			    load-file-name
+			  "~/.emacs")))
+      )
+  (desktop-save-mode 1)
+  (setq desktop-dirname conf-path)
+  (let ((my-path (concat conf-path "emacs")))
+    ;; enable session saving
+    (add-to-list 'load-path my-path)
+    (load "codepad")
+    (load "c++-settings")
+    (load "my-git")
+    (load "misc")
+  )
+ )
 
 ;; Trailing whitespace is unnecessary
 ;(add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)))
@@ -47,6 +58,7 @@
 (global-set-key [(C-f12)]   'gdb-display-gdb-buffer)
 (put 'upcase-region 'disabled nil)
 
+;; move into misc
 (if (string= system-type "windows-nt")
     (let ((WM_MAXIMIZE #xf030))
       (global-set-key
@@ -82,19 +94,29 @@
 		'(lambda () (interactive) (revert-buffer t t)))
 (global-set-key "\C-c\C-k" 'uncomment-region)
 
+;; move into misc
+(if (string= system-type "gnu/linux")
+    (progn
+      (setq x-select-enable-clipboard t)
+      (set-face-attribute 'default nil :family "Anonymous Pro" :height 110)
+      ))
+
  ;Consolas
 (server-start)
 
+;; set header format
 (setq default-header-line-format '("--"
  (which-func-mode
   ("" which-func-format
    #("--" 0 2
      (help-echo "mouse-1: Select (drag to resize)\nmouse-2: Make current window occupy the whole frame\nmouse-3: Remove current window from display")))) "%f"))
 
+;; move out
 (defun py-make-console-scetch ()
   (interactive)
   (let ((file-name (make-temp-file "emacs_test" nil ".py")))
     (find-file file-name)))
+
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
