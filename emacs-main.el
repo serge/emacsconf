@@ -17,8 +17,6 @@
 			    load-file-name
 			  "~/.emacs")))
       )
-  (desktop-save-mode 1)
-  (setq desktop-dirname conf-path)
   (let ((my-path (concat conf-path "emacs")))
     ;; enable session saving
     (add-to-list 'load-path my-path)
@@ -26,6 +24,20 @@
     (load "c++-settings")
     (load "my-git")
     (load "misc")
+    (defun load-sytem-misc-path (system-file)
+      (let (
+      (my-system-path
+       (concat my-path (cond
+       ((string= system-type "gnu/linux") "/linux/")
+       ((string= system-type "windows-nt") "/win32/")
+       ((string= system-type "darwin") "/macosx/")
+       (t "none")) )))
+	(let ((my-system-file (concat my-system-path system-file ".el")))
+	  (if (file-exists-p my-system-file)
+	      (progn
+		(add-to-list 'load-path my-system-path)
+		(load system-file))))))
+    (load-sytem-misc-path "my-system")
   )
  )
 
@@ -58,34 +70,6 @@
 (global-set-key [(C-f12)]   'gdb-display-gdb-buffer)
 (put 'upcase-region 'disabled nil)
 
-;; move into misc
-(if (string= system-type "windows-nt")
-    (let ((WM_MAXIMIZE #xf030))
-      (global-set-key
-       [(C-f2)]
-       '(lambda ()
-	  (interactive)
-	  (let ((file-name (buffer-file-name)))
-	    (if file-name (w32-set-clipboard-data file-name)
-	      (message "buffer %s isn't visiting any file" (buffer-name))))))
-      (global-set-key
-       [(M-f2)]
-       '(lambda ()
-	  (interactive)
-	  (defun remove-commas (str)
-	    (replace-regexp-in-string "\"" "" str))
-	  (let ((file-name (remove-commas (w32-get-clipboard-data))))
-	    (if file-name
-		(if (and
-		     file-name
-		     (file-exists-p file-name))
-		    (find-file file-name)
-		  (message "File %s doesn't exist" file-name))
-	      (message "File name is empty")))))
-      (setq w32-enable-caps-lock nil)
-      (define-key function-key-map [(capslock)] 'event-apply-control-modifier)
-      ;(global-set-key [capslock] 'event-apply-control-modifier)
-      (w32-send-sys-command WM_MAXIMIZE)))
 
 (defun current-buffer-other-window ()
   (interactive)
@@ -94,14 +78,7 @@
 		'(lambda () (interactive) (revert-buffer t t)))
 (global-set-key "\C-c\C-k" 'uncomment-region)
 
-;; move into misc
-(if (string= system-type "gnu/linux")
-    (progn
-      (setq x-select-enable-clipboard t)
-      (set-face-attribute 'default nil :family "Anonymous Pro" :height 110)
-      ))
-
- ;Consolas
+;; start emacs-daemon
 (server-start)
 
 ;; set header format
