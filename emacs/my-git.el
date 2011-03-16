@@ -1,4 +1,4 @@
-(setq git-bin "/usr/local/bin/git")
+(setq git-bin "git")
 (defun git-get-root ()
   (with-temp-buffer
     (shell-command (concat git-bin " rev-parse --show-toplevel") t)
@@ -51,3 +51,8 @@
    "Show git-blame command output on the current file"
    (interactive)
    (shell-command (format "%s blame %s" git-bin (file-relative-name (file-truename (buffer-file-name))))))
+
+(defun git-checkout (treespec)
+  ""
+  (interactive (git-read-revision "Branch: "))
+  (shell-command (format "%s checkout %s" git-bin treespec)))
