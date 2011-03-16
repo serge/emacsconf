@@ -57,6 +57,9 @@
 
 (put 'narrow-to-page 'disabled nil)
 
+;; make ediff use vertical split by default
+(setq ediff-split-window-function (quote split-window-horizontally))
+
 ;; regex example
 ;; (while (re-search-forward "get\\(H\\|A\\|V\\|S\\)\\([^m][a-z]\\{1,5\\}\\)()" nil t)
 ;;  (replace-match (concat "Get(rendu3DProperty::"
@@ -92,9 +95,12 @@
 
 (put 'dired-find-alternate-file 'disabled nil)
 
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/w3m")
-(if window-system
-   (require 'w3m-load))
+(let ((w3m-path "/usr/share/emacs/site-lisp/w3m"))
+  (if (file-exists-p w3m-path)
+      (progn
+	(add-to-list 'load-path w3m-path)
+	(if window-system
+	    (require 'w3m-load)))))
 
 (defun grep-current-word ()
   (interactive)
