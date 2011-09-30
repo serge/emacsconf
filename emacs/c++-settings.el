@@ -38,6 +38,12 @@
 (defun cpp-compile-current-file ()
   "Compile and link a file visited in the current buffer"
   (interactive)
+  (defun get-full-exename (exename ext)
+    (cond
+       ((string= system-type "gnu/linux") exename)
+       ((string= system-type "windows-nt") exename)
+       ((string= system-type "darwin") (concat exename "." ext))
+       (t "none")))
   (let ((filename (buffer-file-name)))
     (if filename
         (let (
@@ -49,7 +55,7 @@
               (accept-ext '("cpp" "c" "cxx" "cc"))
               )
           (if (_private-c++-is-has-extension accept-ext file-ext)
-	      (let ((full-exename (concat exename "." exe-ext)))
+	      (let ((full-exename (get-full-exename exename exe-ext)))
 		(compile (format "%s %s \"%s\" -o \"%s\"" compiler options filename full-exename))
 		full-exename
 		)
@@ -350,7 +356,7 @@
   (recenter-top-bottom 0))
 (defun cpp-find-grep-current-word ()
   (interactive)
-  (grep-find (format "find . -name \"*.%s\" -exec grep -nH -e %s {} \;" (file-name-extension (buffer-name)) (current-word))))
+  (grep-find (format "find . -name \"*.%s\" -exec grep -nH -e %s {} \\;" (file-name-extension (buffer-name)) (current-word))))
 (defun cpp-occur-current-word ()
   (interactive)
   (occur (current-word)))
