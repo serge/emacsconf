@@ -1,0 +1,11 @@
+#!/bin/bash
+if [ -f emacs-main.el ]
+then
+    echo ";; call .emacs from source control" > ~/.emacs
+    echo "(add-to-list 'load-path \"`echo $PWD | sed -e 's@'$HOME'\\(.*\\)@~\1@g'`\")" >> ~/.emacs
+    echo "(load \"emacs-main\")" >> ~/.emacs
+else    
+    echo "ERROR: Must be launched from the same directory of emacs-main.el"
+fi
+
+
