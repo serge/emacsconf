@@ -51,7 +51,6 @@
 ;; enable session saving
 (desktop-save-mode 1)
 (setq desktop-dirname "~/")
-(split-window-horizontally)
 
 (put 'narrow-to-region 'disabled nil)
 
@@ -77,9 +76,10 @@
 		'(lambda () (interactive) (revert-buffer t t)))
 (global-set-key "\C-c\C-k" 'uncomment-region)
 
-;; start emacs-daemon
-(server-start)
-
+(if (not (daemonp)) (progn
+		      (split-window-horizontally)
+		      (server-start)
+		      ))
 ;; set header format
 (setq default-header-line-format '("--"
  (which-func-mode
